@@ -25,28 +25,26 @@ export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("useEffect running - isPlay:", isPlay);
-  
       if (isPlay) {
         timerAudio.play().catch(console.error);
-      } else {
-        clearInterval(interval);
-        timerAudio.stop();
-      }
+      } 
     }, 1000); // Runs every 1 second
   
     return () => clearInterval(interval); // Cleanup when component unmounts
-  }, [isPlay]); // Empty dependency array ensures it runs continuously
+  }); // Empty dependency array ensures it runs continuously
   
 
   useEffect(() => {
     if (timer.isRunning) {
+      // setIsPlay(true);
+
       if (!intervalRef.current) {
         intervalRef.current = setInterval(() => {
           updateTimers(timer.id);
         }, 1000);
       }
     } else {
+
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -60,7 +58,7 @@ export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
     };
 
 
-  }, [timer.isRunning, timer.id, updateTimers]);
+  }, [timer.isRunning, timer.id, updateTimers,timers]);
 
   useEffect(() => {
     if (timer.remainingTime <= 0 && isPlay) {
@@ -92,10 +90,15 @@ export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
 
   const handleToggle = useCallback(() => {
     if (timer.remainingTime <= 0) {
+      alert("Hello");
       hasEndedRef.current = false;
     }
-    setIsPlay(true);
     toggleTimer(timer.id);
+    let duration = timer.duration;
+    setTimeout(() => {
+      setIsPlay(true);
+    }, duration*1000);
+
   }, [toggleTimer, timer.id, timer.remainingTime]);
 
   return (
