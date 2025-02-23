@@ -14,11 +14,30 @@ interface TimerItemProps {
 }
 
 export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
-  const { toggleTimer, deleteTimer, updateTimers, restartTimer } = useTimerStore();
+  const { timers ,toggleTimer, deleteTimer, updateTimers, restartTimer } = useTimerStore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerAudio = TimerAudio.getInstance();
   const hasEndedRef = useRef(false);
+  const [isPlay, setIsPlay] = useState(false);
+
+  
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("useEffect running - isPlay:", isPlay);
+  
+      if (isPlay) {
+        timerAudio.play().catch(console.error);
+      } else {
+        clearInterval(interval);
+        timerAudio.stop();
+      }
+    }, 1000); // Runs every 1 second
+  
+    return () => clearInterval(interval); // Cleanup when component unmounts
+  }, [isPlay]); // Empty dependency array ensures it runs continuously
+  
 
   useEffect(() => {
     if (timer.isRunning) {
@@ -33,25 +52,27 @@ export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
         intervalRef.current = null;
       }
     }
-
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
+
+
   }, [timer.isRunning, timer.id, updateTimers]);
 
   useEffect(() => {
-    if (timer.remainingTime <= 0 && !hasEndedRef.current) {
+    if (timer.remainingTime <= 0 && isPlay) {
       hasEndedRef.current = true;
-      timerAudio.play().catch(console.error);
 
       toast.success(`Timer "${timer.title}" has ended!`, {
-        duration: 5000,
+        duration: Infinity,
         action: {
           label: 'Dismiss',
-          onClick: timerAudio.stop,
+          onClick: () => {
+            setIsPlay(false);
+          },
         },
       });
 
@@ -73,6 +94,7 @@ export const TimerItem: React.FC<TimerItemProps> = ({ timer }) => {
     if (timer.remainingTime <= 0) {
       hasEndedRef.current = false;
     }
+    setIsPlay(true);
     toggleTimer(timer.id);
   }, [toggleTimer, timer.id, timer.remainingTime]);
 
