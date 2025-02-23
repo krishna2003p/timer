@@ -61,7 +61,7 @@ export class TimerAudio {
     }
   }
 
-  stop(): void {
+  stop = (): void => {
     this.cleanup();
   }
 

@@ -9,7 +9,7 @@ export interface TimerFormData {
 }
 
 export const validateTimerForm = (data: TimerFormData): boolean => {
-  const { title, hours, minutes, seconds } = data;
+  const { title,description, hours, minutes, seconds } = data;
   
   if (!title.trim()) {
     toast.error('Title is required');
@@ -18,6 +18,11 @@ export const validateTimerForm = (data: TimerFormData): boolean => {
 
   if (title.length > 50) {
     toast.error('Title must be less than 50 characters');
+    return false;
+  }
+
+  if (!description.trim()) {
+    toast.error('description is required');
     return false;
   }
 

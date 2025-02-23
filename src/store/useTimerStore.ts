@@ -1,5 +1,7 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
+import { persistReducer, persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import { Timer } from '../types/timer';
 
 const initialState = {
@@ -15,6 +17,7 @@ const timerSlice = createSlice({
         ...action.payload,
         id: crypto.randomUUID(),
         createdAt: Date.now(),
+        isRunning: false, // Default state
       });
     },
     deleteTimer: (state, action) => {
@@ -26,12 +29,15 @@ const timerSlice = createSlice({
         timer.isRunning = !timer.isRunning;
       }
     },
-    updateTimer: (state, action) => {
-      const timer = state.timers.find(timer => timer.id === action.payload);
-      if (timer && timer.isRunning) {
-        timer.remainingTime -= 1;
-        timer.isRunning = timer.remainingTime > 0;
-      }
+    updateTimers: (state) => {
+      state.timers.forEach(timer => {
+        if (timer.isRunning && timer.remainingTime > 0) {
+          timer.remainingTime -= 1;
+          if (timer.remainingTime <= 0) {
+            timer.isRunning = false;
+          }
+        }
+      });
     },
     restartTimer: (state, action) => {
       const timer = state.timers.find(timer => timer.id === action.payload);
@@ -44,24 +50,34 @@ const timerSlice = createSlice({
       const timer = state.timers.find(timer => timer.id === action.payload.id);
       if (timer) {
         Object.assign(timer, action.payload.updates);
-        timer.remainingTime = action.payload.updates.duration || timer.duration;
-        timer.isRunning = false;
+        if (action.payload.updates.duration !== undefined) {
+          timer.remainingTime = action.payload.updates.duration;
+        }
       }
     },
   },
 });
 
+const persistConfig = {
+  key: 'timerStore',
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, timerSlice.reducer);
+
 const store = configureStore({
-  reducer: timerSlice.reducer,
+  reducer: persistedReducer,
 });
 
-export { store };
+const persistor = persistStore(store);
+
+export { store, persistor };
 
 export const {
   addTimer,
   deleteTimer,
   toggleTimer,
-  updateTimer,
+  updateTimers,
   restartTimer,
   editTimer,
 } = timerSlice.actions;
@@ -75,7 +91,7 @@ export const useTimerStore = () => {
     addTimer: (timer: Omit<Timer, 'id' | 'createdAt'>) => dispatch(addTimer(timer)),
     deleteTimer: (id: string) => dispatch(deleteTimer(id)),
     toggleTimer: (id: string) => dispatch(toggleTimer(id)),
-    updateTimer: (id: string) => dispatch(updateTimer(id)),
+    updateTimers: () => dispatch(updateTimers()), // Updates all running timers
     restartTimer: (id: string) => dispatch(restartTimer(id)),
     editTimer: (id: string, updates: Partial<Timer>) => dispatch(editTimer({ id, updates })),
   };
