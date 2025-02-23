@@ -105,10 +105,8 @@ export const EditTimerModal: React.FC<EditTimerModalProps> = ({
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => setTouched({ ...touched, title: true })}
               maxLength={50}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                touched.title && !isTitleValid
-                  ? 'border-red-500'
-                  : 'border-gray-300'
+              className={`border border-gray-300 outline-none rounded-md shadow-sm focus:ring-2 focus:ring-gray-300 focus:border-gray-300 w-full px-3 py-2 ${
+                touched.title && !isTitleValid ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="Enter timer title"
             />
@@ -130,7 +128,9 @@ export const EditTimerModal: React.FC<EditTimerModalProps> = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={`border border-gray-300 rounded-md outline-none shadow-sm focus:ring-2 focus:ring-gray-300 focus:border-gray-300 w-full px-3 py-2 ${
+    touched.title && !isTitleValid ? 'border-red-500' : 'border-gray-300'
+  }`}
               placeholder="Enter timer description (optional)"
             />
           </div>
@@ -146,10 +146,11 @@ export const EditTimerModal: React.FC<EditTimerModalProps> = ({
                   type="number"
                   min="0"
                   max="23"
-                  value={hours}
+                  value={hours === 0 ? '' : hours}
                   onChange={(e) => setHours(Math.min(23, parseInt(e.target.value) || 0))}
                   onBlur={() => setTouched({ ...touched, hours: true })}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none"
+                  placeholder='0'
                 />
               </div>
               <div>
@@ -158,10 +159,11 @@ export const EditTimerModal: React.FC<EditTimerModalProps> = ({
                   type="number"
                   min="0"
                   max="59"
-                  value={minutes}
+                  value={minutes === 0 ? '' : minutes}
                   onChange={(e) => setMinutes(Math.min(59, parseInt(e.target.value) || 0))}
                   onBlur={() => setTouched({ ...touched, minutes: true })}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none"
+                  placeholder='0'
                 />
               </div>
               <div>
@@ -170,10 +172,11 @@ export const EditTimerModal: React.FC<EditTimerModalProps> = ({
                   type="number"
                   min="0"
                   max="59"
-                  value={seconds}
+                  value={seconds === 0 ? '' : seconds}
                   onChange={(e) => setSeconds(Math.min(59, parseInt(e.target.value) || 0))}
                   onBlur={() => setTouched({ ...touched, seconds: true })}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none"
+                  placeholder='0'
                 />
               </div>
             </div>
